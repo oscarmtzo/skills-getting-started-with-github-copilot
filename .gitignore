@@ -40,3 +40,8 @@ Thumbs.db
 .actrc*
 
 __pycache__/
+
+.vscode/
+node_modules/
+package-lock.json
+package.json
