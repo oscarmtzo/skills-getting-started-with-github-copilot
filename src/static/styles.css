@@ -129,6 +129,28 @@ section h3 {
   padding: 0;
 }
 
+.participants-list li.muted::before {
+  /* hide the small dot when item is muted/removed */
+  display: none;
+}
+
+.remove-btn {
+  margin-left: auto; /* push the button to the right */
+  background: transparent;
+  border: none;
+  color: #c62828;
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 4px;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.remove-btn:hover {
+  background: rgba(198, 40, 40, 0.06);
+}
+
+
 .form-group {
   margin-bottom: 15px;
 }

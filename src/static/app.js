@@ -44,7 +44,41 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
           details.participants.forEach((p) => {
             const li = document.createElement('li');
-            li.textContent = p;
+
+            const span = document.createElement('span');
+            span.className = 'participant-email';
+            span.textContent = p;
+
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-btn';
+            removeBtn.setAttribute('aria-label', `Remove ${p}`);
+            removeBtn.title = 'Remove participant';
+            removeBtn.innerHTML = '🗑️';
+
+            // immediate visual feedback: hide bullet via `muted` class,
+            // then call backend to remove and refresh the UI
+            removeBtn.addEventListener('click', async (ev) => {
+              ev.stopPropagation();
+              li.classList.add('muted');
+              try {
+                const resp = await fetch(`/activities/${encodeURIComponent(name)}/participants?email=${encodeURIComponent(p)}`, {
+                  method: 'DELETE'
+                });
+                if (resp.ok) {
+                  // refresh activities to update counts
+                  setTimeout(() => fetchActivities(), 250);
+                } else {
+                  li.classList.remove('muted');
+                  console.error('Failed to remove participant', await resp.json());
+                }
+              } catch (err) {
+                li.classList.remove('muted');
+                console.error('Error removing participant', err);
+              }
+            });
+
+            li.appendChild(span);
+            li.appendChild(removeBtn);
             participantsUl.appendChild(li);
           });
         }
