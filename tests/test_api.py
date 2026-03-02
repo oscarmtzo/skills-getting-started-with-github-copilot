@@ -1,6 +1,7 @@
 """
 Tests for the Mergington High School API using pytest and FastAPI TestClient
 """
+import copy
 import pytest
 from fastapi.testclient import TestClient
 import sys
@@ -78,11 +79,11 @@ def reset_activities():
     # Import and reset
     from app import activities
     activities.clear()
-    activities.update(original)
+    activities.update(copy.deepcopy(original))
     yield
     # Cleanup after test
     activities.clear()
-    activities.update(original)
+    activities.update(copy.deepcopy(original))
 
 
 class TestRootEndpoint:
