@@ -25,9 +25,63 @@ document.addEventListener("DOMContentLoaded", () => {
           <p>${details.description}</p>
           <p><strong>Schedule:</strong> ${details.schedule}</p>
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
+
+          <div class="participants">
+            <h5>Participants</h5>
+            <ul class="participants-list"></ul>
+          </div>
         `;
 
         activitiesList.appendChild(activityCard);
+
+        // populate participants list
+        const participantsUl = activityCard.querySelector(".participants-list");
+        if (details.participants.length === 0) {
+          const li = document.createElement("li");
+          li.textContent = "No participants yet";
+          li.className = "muted";
+          participantsUl.appendChild(li);
+        } else {
+          details.participants.forEach((p) => {
+            const li = document.createElement("li");
+
+            const span = document.createElement("span");
+            span.className = "participant-email";
+            span.textContent = p;
+
+            const removeBtn = document.createElement("button");
+            removeBtn.className = "remove-btn";
+            removeBtn.setAttribute("aria-label", `Remove ${p}`);
+            removeBtn.title = "Remove participant";
+            removeBtn.innerHTML = "🗑️";
+
+            // immediate visual feedback: hide bullet via `muted` class,
+            // then call backend to remove and refresh the UI
+            removeBtn.addEventListener("click", async (ev) => {
+              ev.stopPropagation();
+              li.classList.add("muted");
+              try {
+                const resp = await fetch(`/activities/${encodeURIComponent(name)}/participants?email=${encodeURIComponent(p)}`, {
+                  method: "DELETE"
+                });
+                if (resp.ok) {
+                  // refresh activities to update counts
+                  setTimeout(() => fetchActivities(), 250);
+                } else {
+                  li.classList.remove("muted");
+                  console.error("Failed to remove participant", await resp.json());
+                }
+              } catch (err) {
+                li.classList.remove("muted");
+                console.error("Error removing participant", err);
+              }
+            });
+
+            li.appendChild(span);
+            li.appendChild(removeBtn);
+            participantsUl.appendChild(li);
+          });
+        }
 
         // Add option to select dropdown
         const option = document.createElement("option");
@@ -35,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
         option.textContent = name;
         activitySelect.appendChild(option);
       });
-    } catch (error) {
+      } catch (error) {
       activitiesList.innerHTML = "<p>Failed to load activities. Please try again later.</p>";
       console.error("Error fetching activities:", error);
     }
