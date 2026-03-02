@@ -35,45 +35,45 @@ document.addEventListener("DOMContentLoaded", () => {
         activitiesList.appendChild(activityCard);
 
         // populate participants list
-        const participantsUl = activityCard.querySelector('.participants-list');
+        const participantsUl = activityCard.querySelector(".participants-list");
         if (details.participants.length === 0) {
-          const li = document.createElement('li');
-          li.textContent = 'No participants yet';
-          li.className = 'muted';
+          const li = document.createElement("li");
+          li.textContent = "No participants yet";
+          li.className = "muted";
           participantsUl.appendChild(li);
         } else {
           details.participants.forEach((p) => {
-            const li = document.createElement('li');
+            const li = document.createElement("li");
 
-            const span = document.createElement('span');
-            span.className = 'participant-email';
+            const span = document.createElement("span");
+            span.className = "participant-email";
             span.textContent = p;
 
-            const removeBtn = document.createElement('button');
-            removeBtn.className = 'remove-btn';
-            removeBtn.setAttribute('aria-label', `Remove ${p}`);
-            removeBtn.title = 'Remove participant';
-            removeBtn.innerHTML = '🗑️';
+            const removeBtn = document.createElement("button");
+            removeBtn.className = "remove-btn";
+            removeBtn.setAttribute("aria-label", `Remove ${p}`);
+            removeBtn.title = "Remove participant";
+            removeBtn.innerHTML = "🗑️";
 
             // immediate visual feedback: hide bullet via `muted` class,
             // then call backend to remove and refresh the UI
-            removeBtn.addEventListener('click', async (ev) => {
+            removeBtn.addEventListener("click", async (ev) => {
               ev.stopPropagation();
-              li.classList.add('muted');
+              li.classList.add("muted");
               try {
                 const resp = await fetch(`/activities/${encodeURIComponent(name)}/participants?email=${encodeURIComponent(p)}`, {
-                  method: 'DELETE'
+                  method: "DELETE"
                 });
                 if (resp.ok) {
                   // refresh activities to update counts
                   setTimeout(() => fetchActivities(), 250);
                 } else {
-                  li.classList.remove('muted');
-                  console.error('Failed to remove participant', await resp.json());
+                  li.classList.remove("muted");
+                  console.error("Failed to remove participant", await resp.json());
                 }
               } catch (err) {
-                li.classList.remove('muted');
-                console.error('Error removing participant', err);
+                li.classList.remove("muted");
+                console.error("Error removing participant", err);
               }
             });
 
